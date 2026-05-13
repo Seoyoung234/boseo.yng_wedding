@@ -464,7 +464,7 @@ function SaveTheDate() {
           flexDirection: "column",
           justifyContent: "flex-end",
           alignItems: "center",
-          paddingBottom: "0%",
+          paddingBottom: "10%",
           transform: "scale(0.8) translateY(5%)", // ✅ FIX: translateY로 캘린더 위치 조정
         }}
       >
@@ -503,10 +503,12 @@ function SaveTheDate() {
                 color:
                   day === 4
                     ? "#fff"
-                    : i % 7 === 0
-                    ? "#FF1111" // ✅ FIX: 일요일 쨍한 빨강
-                    : i % 7 === 6
-                    ? "#1144FF" // ✅ FIX: 토요일 쨍한 파랑
+                    : day
+                    ? new Date(2026, 9, day).getDay() === 0
+                      ? "#FF1111" // 일요일
+                      : new Date(2026, 9, day).getDay() === 6
+                      ? "#1144FF" // 토요일
+                      : "#222"
                     : "#222",
                 fontWeight: 700,
                 fontSize: "14px",
@@ -722,13 +724,13 @@ function App() {
               zIndex: 2,
               marginTop: "-110px",
               marginBottom: "20px",
-              fontSize: "80px",
+              fontSize: "95px",
               fontFamily: "'Kapakana', cursive",
               fontWeight: 400,
-              letterSpacing: "1px",
+              letterSpacing: "-3px",
             }}
           >
-            Thanks.
+            Love ya-!
           </div>
 
           <img
