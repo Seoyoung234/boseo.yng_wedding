@@ -252,31 +252,29 @@ function FadeInSection({ children, padding = "20px 0" }) {
 function DateInfo() {
   return (
     <FadeInSection padding="40px 0 20px">
-      <div style={{
-        textAlign: "center",
-        fontFamily: "'Orbit', sans-serif",
-        padding: "0 24px",
-      }}>
+      <div style={{ textAlign: "center", fontFamily: "'Orbit', sans-serif", padding: "0 24px" }}>
+
         <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
           DATE
         </div>
-        <div style={{ fontSize: "28px", fontWeight: 900, color: "#222", letterSpacing: "2px", marginBottom: "8px" }}>
-          2026 · 10 · 04
-        </div>
-        <div style={{ fontSize: "13px", letterSpacing: "3px", color: "#666", marginBottom: "36px" }}>
-          SUNDAY · 3:00 PM
-        </div>
 
-        <div style={{ width: "40px", height: "1px", background: "#ddd", margin: "0 auto 36px" }} />
+        {/* 카드 */}
+        <div style={{
+          background: "#fff",
+          border: "1px solid #f2e1e6",
+          borderRadius: "20px",
+          padding: "22px",
+          boxShadow: "0 6px 16px rgba(0,0,0,0.05)"
+        }}>
 
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
-          PLACE
-        </div>
-        <div style={{ fontSize: "22px", fontWeight: 900, color: "#222", letterSpacing: "1px", marginBottom: "8px" }}>
-          THE LINK HOTEL
-        </div>
-        <div style={{ fontSize: "13px", letterSpacing: "2px", color: "#666" }}>
-          5F · GRAND BALLROOM (가든홀)
+          <div style={{ fontSize: "26px", fontWeight: 900, color: "#222", marginBottom: "6px" }}>
+            2026 · 10 · 04
+          </div>
+
+          <div style={{ fontSize: "13px", letterSpacing: "2px", color: "#666", marginBottom: "18px" }}>
+            SUNDAY · 3:00 PM
+          </div>
+
         </div>
       </div>
     </FadeInSection>
@@ -308,21 +306,42 @@ function LocationInfo() {
     <FadeInSection padding="20px 0 0">
       {/* LOCATION 텍스트 */}
       <div style={{ textAlign: "center", padding: "0 24px 24px", fontFamily: "'Orbit', sans-serif" }}>
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
-          LOCATION
-        </div>
-        <div style={{ fontSize: "17px", fontWeight: 900, color: "#222", marginBottom: "6px" }}>
-          더 링크 호텔 · 5F 가든홀
-        </div>
-        <div style={{ fontSize: "13px", color: "#666", marginBottom: "16px" }}>
-          {address}
-        </div>
+
+  <div style={{
+    fontSize: "11px",
+    letterSpacing: "4px",
+    color: "#aaa",
+    marginBottom: "16px"
+  }}>
+    LOCATION
+  </div>
+
+  <div style={{
+    background: "#fff",
+    border: "1px solid #f2e1e6",
+    borderRadius: "18px",
+    padding: "18px",
+    marginBottom: "12px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+  }}>
+    <div style={{ fontSize: "16px", fontWeight: 900 }}>
+      더 링크 호텔
+    </div>
+    <div style={{ fontSize: "13px", color: "#666" }}>
+      5F · GRAND BALLROOM (가든홀)
+    </div>
+    <div style={{ fontSize: "12px", color: "#aaa", marginTop: "6px" }}>
+      {address}
+    </div>
+  </div>
+        
+        
         <button
           onClick={copyAddress}
           style={{
-            background: "transparent",
-            border: "1.5px solid #D66072",
-            color: "#D66072",
+            background: "#D66072",
+            color: "#fff",
+            border: "none",
             borderRadius: "999px",
             padding: "8px 20px",
             fontSize: "12px",
@@ -370,21 +389,21 @@ function LocationInfo() {
       }}>
         {/* 셔틀버스 */}
         <div style={{ marginBottom: "20px" }}>
-          <div style={{ fontWeight: 900, fontSize: "13px", marginBottom: "4px" }}>🚌 셔틀버스</div>
+          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "4px" }}>🚌 셔틀버스</div>
           <div style={{ color: "#666" }}>신도림역 1번 출구</div>
         </div>
 
         {/* 자가용 */}
         <div style={{ marginBottom: "20px" }}>
-          <div style={{ fontWeight: 900, fontSize: "13px", marginBottom: "4px" }}>🚗 자가용</div>
+          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "4px" }}>🚗 자가용</div>
           <div style={{ color: "#666" }}>1시간 30분 무료 (초과시 15분당 1,000원)</div>
         </div>
 
         {/* 지하철&버스 */}
         <div>
-          <div style={{ fontWeight: 900, fontSize: "13px", marginBottom: "8px" }}>🚎 지하철 & 버스</div>
-          <div style={{ color: "#666", marginBottom: "4px" }}>1호선 구로역 3번 출구 도보 5분</div>
-          <div style={{ color: "#666", marginBottom: "20px" }}>1, 2호선 신도림역 1번 출구 도보 10분</div>
+          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "8px" }}>🚎 지하철 & 버스</div>
+          <div style={{ fontWeight: 1200, color: "#666", marginBottom: "4px" }}>1호선 구로역 3번 출구 도보 5분</div>
+          <div style={{ fontWeight: 1200, color: "#666", marginBottom: "20px" }}>1, 2호선 신도림역 1번 출구 도보 10분</div>
 
           {/* 신도림동(구로역) */}
           <div style={{ fontWeight: 900, fontSize: "12px", marginBottom: "6px", color: "#333" }}>신도림동(구로역)</div>
@@ -1038,7 +1057,6 @@ function ShareButtons() {
 
         {/* 배포 안내 */}
         <div style={{ marginTop: "32px", fontSize: "10px", color: "#ccc", lineHeight: 1.8, letterSpacing: "0.3px" }}>
-          * 배포 후 카카오 개발자 콘솔 →<br />플랫폼 → Web → 사이트 도메인에<br />배포 URL을 등록해야 카카오 공유가 작동합니다.
         </div>
       </div>
     </FadeInSection>
@@ -1060,22 +1078,20 @@ function GuestMessage() {
   }, []);
 
   const loadMessages = async () => {
-    setLoading(true);
     try {
-      const keys = await window.storage.list("msg:");
-      const loaded = await Promise.all(
-        keys.keys.map(async (k) => {
-          const r = await window.storage.get(k, true);
-          return r ? JSON.parse(r.value) : null;
-        })
+      const keys = Object.keys(localStorage).filter(k => k.startsWith("msg:"));
+  
+      const loaded = keys.map(k => {
+        return JSON.parse(localStorage.getItem(k));
+      });
+  
+      setMessages(
+        loaded.filter(Boolean).sort((a, b) => b.ts - a.ts)
       );
-      const sorted = loaded
-        .filter(Boolean)
-        .sort((a, b) => b.ts - a.ts);
-      setMessages(sorted);
-    } catch {
+    } catch (e) {
       setMessages([]);
     }
+  
     setLoading(false);
   };
 
@@ -1084,97 +1100,134 @@ function GuestMessage() {
       alert("이름과 메시지를 모두 입력해주세요!");
       return;
     }
+
     setSubmitting(true);
-    const entry = { id: Date.now(), name: name.trim(), message: message.trim(), ts: Date.now() };
+
+    const entry = {
+      id: Date.now(),
+      name: name.trim(),
+      message: message.trim(),
+      ts: Date.now(),
+    };
+
     try {
-      await window.storage.set("msg:" + entry.id, JSON.stringify(entry), true);
+      localStorage.setItem(
+        "msg:" + entry.id,
+        JSON.stringify(entry)
+      );
+
       setName("");
       setMessage("");
       await loadMessages();
-    } catch {
-      alert("저장에 실패했습니다. 다시 시도해주세요.");
+    } catch (e) {
+      alert("저장 실패");
     }
-    setSubmitting(false);
-  };
 
-  const inputStyle = {
-    width: "100%",
-    boxSizing: "border-box",
-    border: "1.5px solid #f0e0e5",
-    borderRadius: "12px",
-    padding: "12px 14px",
-    fontSize: "13px",
-    fontFamily: "'Orbit', sans-serif",
-    color: "#333",
-    background: "#fff",
-    outline: "none",
-    WebkitAppearance: "none",
+    setSubmitting(false);
   };
 
   return (
     <FadeInSection padding="0 0 60px">
-      <div style={{ padding: "40px 24px 0", fontFamily: "'Orbit', sans-serif" }}>
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "28px", textAlign: "center" }}>
+      <div style={{ padding: "40px 24px", fontFamily: "'Orbit', sans-serif" }}>
+        
+        <div style={{
+          textAlign: "center",
+          fontSize: "11px",
+          letterSpacing: "4px",
+          color: "#aaa",
+          marginBottom: "28px"
+        }}>
           축하 메시지
         </div>
 
-        {/* 입력 폼 */}
+        {/* 입력 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "24px" }}>
+          
           <input
-            type="text"
-            placeholder="이름"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={inputStyle}
+            placeholder="이름"
+            style={{
+              padding: "12px",
+              border: "1px solid #f0e0e5",
+              borderRadius: "10px",
+            }}
           />
+
           <textarea
-            placeholder="축하 메시지를 남겨주세요 💌"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            placeholder="축하 메시지를 남겨주세요 💌"
             rows={4}
-            style={{ ...inputStyle, resize: "none", lineHeight: 1.7 }}
+            style={{
+              padding: "12px",
+              border: "1px solid #f0e0e5",
+              borderRadius: "10px",
+              resize: "none",
+            }}
           />
+
           <button
             onClick={submit}
             disabled={submitting}
             style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              background: submitting ? "#eee" : "#D66072",
+              background: "#D66072",
               color: "#fff",
-              fontSize: "13px",
+              border: "none",
+              borderRadius: "10px",
+              padding: "12px",
               fontWeight: 900,
-              fontFamily: "'Orbit', sans-serif",
-              letterSpacing: "1px",
-              cursor: submitting ? "not-allowed" : "pointer",
+              cursor: "pointer",
             }}
           >
             {submitting ? "전송 중..." : "메시지 남기기 💌"}
           </button>
         </div>
 
-        {/* 메시지 목록 */}
+        {/* 포스트잇 메시지 */}
         {loading ? (
-          <div style={{ textAlign: "center", color: "#ccc", fontSize: "12px", padding: "20px 0" }}>불러오는 중...</div>
+          <div style={{ textAlign: "center", color: "#ccc" }}>불러오는 중...</div>
         ) : messages.length === 0 ? (
-          <div style={{ textAlign: "center", color: "#ccc", fontSize: "12px", padding: "20px 0" }}>첫 번째 메시지를 남겨주세요 💕</div>
+          <div style={{ textAlign: "center", color: "#ccc" }}>
+            첫 번째 메시지를 남겨주세요 💕
+          </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {messages.map((m) => (
-              <div key={m.id} style={{
-                background: "#fff",
-                border: "1px solid #f0e0e5",
-                borderRadius: "14px",
-                padding: "16px 18px",
-              }}>
-                <div style={{ fontSize: "12px", fontWeight: 900, color: "#D66072", marginBottom: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {messages.map((m, i) => (
+              <div
+                key={m.id}
+                style={{
+                  background: "#FFFDF5",
+                  border: "1px solid #f2e1e6",
+                  borderRadius: "12px",
+                  padding: "14px 16px",
+                  transform: `rotate(${(i % 3 - 1) * 2}deg)`,
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)"
+                }}
+              >
+                <div style={{ fontSize: "11px", fontWeight: 900, color: "#D66072", marginBottom: "6px" }}>
                   {m.name}
                 </div>
-                <div style={{ fontSize: "12px", color: "#555", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
+
+                <div style={{ fontSize: "12px", color: "#444", whiteSpace: "pre-wrap" }}>
                   {m.message}
                 </div>
+                <button
+                  onClick={async () => {
+                    localStorage.removeItem("msg:" + m.id);
+                    await loadMessages();
+                  }}
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "10px",
+                    border: "none",
+                    background: "transparent",
+                    color: "#D66072",
+                    cursor: "pointer",
+                  }}
+                >
+                  삭제
+                </button>
               </div>
             ))}
           </div>
