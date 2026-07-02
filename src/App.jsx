@@ -939,10 +939,10 @@ function App() {
         onClick={toggleMusic}
         style={{
           position: "fixed",
-          right: "20px",
-          top: "20px",
-          width: "46px",
-          height: "46px",
+          right: "25px",
+          top: "25px",
+          width: "37px",
+          height: "37px",
           borderRadius: "999px",
           border: "none",
           background: "rgba(214, 96, 114, 0.95)",
