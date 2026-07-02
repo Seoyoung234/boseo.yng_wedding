@@ -760,7 +760,7 @@ function PhotoUpload({ setGuestPhotos }) {
         lineHeight: 1.8,
         whiteSpace: "pre-line",   // ⭐ 핵심
       }}>
-        📸저희의 스냅 작가가 되어주세요!📸<br />
+        저희의 스냅 작가가 되어주세요!📸<br />
         <br />
         가장 멋진 사진을<br />
         남겨주신 분께 맛있는 밥 한 끼를 쏩니다!🎁<br />
