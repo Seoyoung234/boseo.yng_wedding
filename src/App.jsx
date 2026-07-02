@@ -373,7 +373,7 @@ function DateInfo() {
     <FadeInSection padding="40px 0 20px">
       <div style={{ textAlign: "center", fontFamily: "'NanumSquareNeo', sans-serif", padding: "0 24px" }}>
 
-        <div style={{ fontSize: "13px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
+        <div style={{ fontSize: "13px", letterSpacing: "4px", color: "#333", marginBottom: "16px" }}>
           DATE
         </div>
 
@@ -429,7 +429,7 @@ function LocationInfo() {
   <div style={{
     fontSize: "13px",
     letterSpacing: "4px",
-    color: "#aaa",
+    color: "#333",
     marginBottom: "16px"
   }}>
     LOCATION
@@ -456,10 +456,7 @@ function LocationInfo() {
         
         
   <button
-  onClick={() => {
-    alert("복사 완료!");
-    copyAddress();
-  }}
+  onClick={copyAddress}
   style={{
     background: "#D66072",
     color: "#fff",
@@ -470,7 +467,9 @@ function LocationInfo() {
     fontFamily: "'NanumSquareNeo', sans-serif",
     letterSpacing: "-1px",
     cursor: "pointer",
+    marginTop: "10px",
     marginBottom: "0px",
+    fontWeight: "bold",
   }}
 >
   주소 복사하기
@@ -646,37 +645,132 @@ function SaveTheDate() {
   );
 }
 
-function PhotoUpload() {
+function PhotoUpload({ setGuestPhotos }) {
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0); 
+  
+
+  const uploadPhoto = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    setUploading(true);   // ⭐ 추가
+    setProgress(0);       // ⭐ 추가
+
+    try {
+      const urls = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const data = new FormData(); // ⭐ 이거 필수
+
+        data.append("file", file);
+        data.append("upload_preset", "guest_snap");
+
+        const res = await fetch(
+          "https://api.cloudinary.com/v1_1/oyamm4ra/image/upload",
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+
+        const result = await res.json();
+
+        if (!result.secure_url) {
+          throw new Error("업로드 실패");
+        }
+
+        urls.push(result.secure_url);
+
+        setProgress(Math.round(((i + 1) / files.length) * 100));
+      }
+
+      alert(`${files.length}장의 사진이 업로드되었습니다💕`);
+
+      e.target.value = "";
+
+      // ⭐ 여기 중요 (저장 + 상태 업데이트)
+      setGuestPhotos(prev => {
+        const updated = [...prev, ...urls];
+        localStorage.setItem("guest_photos", JSON.stringify(updated));
+        return updated;
+      });
+
+      setUploading(false);
+      setProgress(0);
+
+      e.target.value = "";
+
+    } catch (err) {
+      console.error("UPLOAD ERROR:", err);
+      alert("업로드 실패: 콘솔 확인");
+    }
+  };
+
   return (
     <FadeInSection padding="0 0 80px">
-      <div style={{
-        padding: "40px 24px",
-        textAlign: "center",
-        fontFamily: "'NanumSquareNeo', sans-serif"
-      }}>
-
+      <div style={{ textAlign: "center" }}>
+  
+      {/* 업로드 상태바 */}
+      {uploading && (
         <div style={{
-          fontSize: "14px",
+          width: "220px",
+          height: "6px",
+          background: "#f1f1f1",
+          borderRadius: "999px",
+          margin: "0 auto 12px",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            width: `${progress}%`,
+            height: "100%",
+            background: "#D66072",
+            transition: "width 0.2s ease",
+          }} />
+        </div>
+      )}
+
+      {uploading && (
+        <div style={{
+          fontSize: "11px",
+          color: "#888",
+          marginBottom: "12px"
+        }}>
+          업로드 중... {progress}%
+        </div>
+      )}
+
+
+        {/* ✅ 여기 추가 */}
+        <div style={{
+          fontSize: "18px",
           letterSpacing: "3px",
-          color: "#aaa",
-          marginBottom: "16px"
+          color: "#333",
+          fontWeight: 600,
+          marginBottom: "30px",
         }}>
           PHOTO UPLOAD
         </div>
-
+  
         <div style={{
-          fontSize: "12px",
-          color: "#666",
-          marginBottom: "24px",
-          lineHeight: 1.6
-        }}>
-          사진은 아래 링크를 통해 업로드해주세요 💌
-        </div>
-
-        <a
-          href="https://forms.gle/너의구글폼링크"
-          target="_blank"
-          rel="noreferrer"
+        fontSize: "12px",
+        color: "#666",
+        marginBottom: "24px",
+        lineHeight: 1.8,
+        whiteSpace: "pre-line",   // ⭐ 핵심
+      }}>
+        📸저희의 스냅 작가가 되어주세요!📸<br />
+        <br />
+        가장 멋진 사진을<br />
+        남겨주신 분께 맛있는 밥 한 끼를 쏩니다!🎁<br />
+        <br />
+        당일날, 아래 공유 버튼을 통해 올려주세요!<br />
+        많은 참여 부탁드려요! 💖
+      </div>
+  
+        {/* 🔽 기존 그대로 */}
+        <label
           style={{
             display: "inline-block",
             background: "#D66072",
@@ -685,12 +779,19 @@ function PhotoUpload() {
             borderRadius: "999px",
             fontSize: "12px",
             fontWeight: 800,
-            textDecoration: "none"
+            cursor: "pointer",
           }}
         >
-          하객 사진 업로드하기
-        </a>
-
+          사진 올리기
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={uploadPhoto}
+            style={{ display: "none" }}
+          />
+        </label>
+  
       </div>
     </FadeInSection>
   );
@@ -705,6 +806,10 @@ function App() {
   const [fadeOut, setFadeOut] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(true);
   // ✅ FIX: 카카오 인앱브라우저 vh 튐 방지 - 최초 렌더 시점 높이로 px 고정
+  const [guestPhotos, setGuestPhotos] = useState([]);
+
+
+  
 
   const [heroHeight, setHeroHeight] = useState(window.innerHeight);
 
@@ -1065,7 +1170,7 @@ textShadow: "0 2px 10px rgba(0,0,0,0.35)",
         <ShareButtons />
 
         {/* 📸 PHOTO UPLOAD (NEW) */}
-        <PhotoUpload />
+        <PhotoUpload setGuestPhotos={setGuestPhotos} />
         
       </div>
     </>
@@ -1100,7 +1205,7 @@ function Countdown() {
         background: "linear-gradient(135deg, #fff0f4 0%, #fff8fb 100%)",
         margin: "0 0",
       }}>
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "24px" }}>
+        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#333", marginBottom: "24px" }}>
           COMING SOON
         </div>
         <div style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
@@ -1114,7 +1219,7 @@ function Countdown() {
         <div style={{ fontSize: "13px", color: "#888" }}>
           남았습니다
         </div>
-        <div style={{ marginTop: "24px", fontSize: "11px", color: "#bbb", letterSpacing: "2px" }}>
+        <div style={{ marginTop: "24px", fontSize: "11px", color: "#333", letterSpacing: "-0.5px" }}>
           2026 · 10 · 04 · 일요일 · 3:00 PM
         </div>
       </div>
@@ -1154,7 +1259,7 @@ function AccountInfo() {
         fontFamily: "'NanumSquareNeo', sans-serif",
         textAlign: "center",
       }}>
-        <div style={{ fontSize: "14px", letterSpacing: "4px", color: "#333", marginBottom: "32px" }}>
+        <div style={{ fontSize: "14px", letterSpacing: "4px", color: "#333", marginBottom: "32px",fontWeight: 600 }}>
           마음 전하실 곳
         </div>
 
@@ -1176,7 +1281,7 @@ function AccountInfo() {
             신한 은행 · 110-351-868531
           </div>
           <button
-            onClick={() => copy("000-0000-0000")}
+            onClick={() => copy("110-351-868531")}
             style={{
               background: "transparent",
               border: "1.5px solid #D66072",
@@ -1413,8 +1518,9 @@ function GuestMessage() {
           textAlign: "center",
           fontSize: "15px",
           letterSpacing: "0.2px",
-          color: "#aaa",
-          marginBottom: "28px"
+          color: "#333",
+          fontWeight: 600,
+          marginBottom: "30px"
         }}>
           축하 메시지
         </div>
