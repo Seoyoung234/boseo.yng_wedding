@@ -5,7 +5,62 @@ import { createPortal } from "react-dom";
    STYLE
 ========================= */
 const floatingStyle = `
-@import url('https://fonts.googleapis.com/css2?family=Freckle+Face&family=Henny+Penny&family=Kapakana:wght@300..400&family=Orbit&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Freckle+Face&family=Henny+Penny&family=Kapakana:wght@300..400&display=swap');
+
+@font-face {
+    font-family: 'OngleipYeongrong';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2412-1@1.0/Ownglyph_brilliant-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IncheonEducation';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/iceJaram-Rg.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NanumSquareNeo';
+    src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NanumSquareNeo';
+    src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NanumSquareNeo';
+    src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NanumSquareNeo';
+    src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NanumSquareNeo';
+    src: url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
 
 html {
   scroll-behavior: smooth;
@@ -87,7 +142,13 @@ function SwipeGallery() {
   const stopDragging = () => {
     isDown.current = false;
   };
-
+  
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollLeft = 0;
+    }
+  }, []);
+  
   return (
     <div
       ref={sliderRef}
@@ -138,40 +199,54 @@ function SwipeGallery() {
 ========================= */
 function GridGallery() {
   const images = [
-    "/photo1.jpg",
-    "/photo2.jpg",
-    "/photo3.jpg",
-    "/photo4.jpg",
-    "/photo5.jpg",
-    "/photo6.jpg",
-    "/photo7.jpg",
-    "/photo8.jpg",
-    "/photo9.jpg",
-    "/photo10.jpg",
-    "/photo11.jpg",
-    "/photo12.jpg",
-    "/photo13.jpg",
-    "/photo14.jpg",
-    "/photo15.jpg",
+    "/photo1.jpg", "/photo2.jpg", "/photo3.jpg",
+    "/photo4.jpg", "/photo5.jpg", "/photo6.jpg",
+    "/photo7.jpg", "/photo8.jpg", "/photo9.jpg",
+    "/photo10.jpg", "/photo11.jpg", "/photo12.jpg",
+    "/photo13.jpg", "/photo14.jpg", "/photo15.jpg",
   ];
 
-  const [selected, setSelected] = useState(null);
+  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [dragX, setDragX] = useState(0);
+  const touchStartX = useRef(null);
+  const isDragging = useRef(false);
+
+  const prev = () => setSelectedIdx(i => (i - 1 + images.length) % images.length);
+  const next = () => setSelectedIdx(i => (i + 1) % images.length);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    isDragging.current = true;
+    setDragX(0);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging.current) return;
+    const diff = e.touches[0].clientX - touchStartX.current;
+    setDragX(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    if (dragX < -60) next();
+    else if (dragX > 60) prev();
+    setDragX(0);
+  };
 
   return (
     <>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "4px",
-          padding: "0 12px",
-        }}
-      >
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "4px",
+        padding: "0 12px",
+      }}>
         {images.map((src, i) => (
           <img
             key={i}
             src={src}
-            onClick={() => setSelected(src)}
+            onClick={() => setSelectedIdx(i)}
             style={{
               width: "100%",
               aspectRatio: "3 / 4",
@@ -183,36 +258,80 @@ function GridGallery() {
         ))}
       </div>
 
-      {/* ✅ FIX: createPortal로 body에 직접 마운트 → overflow:hidden 클리핑 완전 우회 */}
-      {selected && createPortal(
+      {selectedIdx !== null && createPortal(
         <div
-          onClick={() => setSelected(null)}
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
+            top: 0, left: 0,
+            width: "100vw", height: "100vh",
             background: "rgba(0,0,0,0.96)",
             zIndex: 2147483647,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            padding: "20px",
-            boxSizing: "border-box",
+            overflow: "hidden",
           }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <img
-            src={selected}
+          {/* 닫기 */}
+          <button
+            onClick={() => setSelectedIdx(null)}
             style={{
-              width: "auto",
-              height: "auto",
-              maxWidth: "92vw",
-              maxHeight: "92vh",
-              objectFit: "contain",
-              borderRadius: "12px",
+              position: "absolute", top: "20px", right: "20px",
+              background: "transparent", border: "none",
+              color: "#fff", fontSize: "28px", cursor: "pointer", zIndex: 1,
+            }}
+          >✕</button>
+
+          {/* 이전 */}
+          <button
+  onClick={(e) => { e.stopPropagation(); prev(); }}
+  style={{
+    position: "absolute", left: "16px", top: "50%",
+    transform: "translateY(-50%)",
+    background: "transparent", border: "none",
+    color: "#fff", fontSize: "28px", cursor: "pointer",
+    borderRadius: "999px", width: "48px", height: "48px",
+    zIndex: 1,
+  }}
+>‹</button>
+
+          {/* 이미지 - dragX만큼 따라오기 */}
+          <img
+            src={images[selectedIdx]}
+            style={{
+              maxWidth: "92vw", maxHeight: "88vh",
+              objectFit: "contain", borderRadius: "12px",
+              transform: `translateX(${dragX}px)`,
+              transition: isDragging.current ? "none" : "transform 0.3s ease",
+              userSelect: "none",
+              pointerEvents: "none",
             }}
           />
+
+          {/* 다음 */}
+          <button
+  onClick={(e) => { e.stopPropagation(); next(); }}
+  style={{
+    position: "absolute", right: "16px", top: "50%",
+    transform: "translateY(-50%)",
+    background: "transparent", border: "none",
+    color: "#fff", fontSize: "28px", cursor: "pointer",
+    borderRadius: "999px", width: "48px", height: "48px",
+    zIndex: 1,
+  }}
+>›</button>
+
+          {/* 인디케이터 */}
+          <div style={{
+            position: "absolute", bottom: "24px",
+            fontSize: "12px", color: "rgba(255,255,255,0.5)",
+            fontFamily: "'NanumSquareNeo', sans-serif",
+          }}>
+            {selectedIdx + 1} / {images.length}
+          </div>
         </div>,
         document.body
       )}
@@ -252,9 +371,9 @@ function FadeInSection({ children, padding = "20px 0" }) {
 function DateInfo() {
   return (
     <FadeInSection padding="40px 0 20px">
-      <div style={{ textAlign: "center", fontFamily: "'Orbit', sans-serif", padding: "0 24px" }}>
+      <div style={{ textAlign: "center", fontFamily: "'NanumSquareNeo', sans-serif", padding: "0 24px" }}>
 
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
+        <div style={{ fontSize: "13px", letterSpacing: "4px", color: "#aaa", marginBottom: "16px" }}>
           DATE
         </div>
 
@@ -267,12 +386,12 @@ function DateInfo() {
           boxShadow: "0 6px 16px rgba(0,0,0,0.05)"
         }}>
 
-          <div style={{ fontSize: "26px", fontWeight: 900, color: "#222", marginBottom: "6px" }}>
+          <div style={{ fontSize: "20px", fontWeight: 800, color: "#222", marginBottom: "6px" }}>
             2026 · 10 · 04
           </div>
 
-          <div style={{ fontSize: "13px", letterSpacing: "2px", color: "#666", marginBottom: "18px" }}>
-            SUNDAY · 3:00 PM
+          <div style={{ fontSize: "13px", letterSpacing: "0.1px", color: "#666" }}>
+            일요일 · 3:00 PM
           </div>
 
         </div>
@@ -305,10 +424,10 @@ function LocationInfo() {
   return (
     <FadeInSection padding="20px 0 0">
       {/* LOCATION 텍스트 */}
-      <div style={{ textAlign: "center", padding: "0 24px 24px", fontFamily: "'Orbit', sans-serif" }}>
+      <div style={{ textAlign: "center", padding: "0 24px 24px", fontFamily: "'NanumSquareNeo', sans-serif" }}>
 
   <div style={{
-    fontSize: "11px",
+    fontSize: "13px",
     letterSpacing: "4px",
     color: "#aaa",
     marginBottom: "16px"
@@ -324,35 +443,38 @@ function LocationInfo() {
     marginBottom: "12px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
   }}>
-    <div style={{ fontSize: "16px", fontWeight: 900 }}>
+    <div style={{ fontSize: "16px", fontWeight: 800 }}>
       더 링크 호텔
     </div>
-    <div style={{ fontSize: "13px", color: "#666" }}>
-      5F · GRAND BALLROOM (가든홀)
+    <div style={{ fontSize: "12px", color: "#666", marginTop: "9px" }}>
+      5F · 가든홀
     </div>
-    <div style={{ fontSize: "12px", color: "#aaa", marginTop: "6px" }}>
+    <div style={{ fontSize: "12px", color: "#aaa", marginTop: "7px" }}>
       {address}
     </div>
   </div>
         
         
-        <button
-          onClick={copyAddress}
-          style={{
-            background: "#D66072",
-            color: "#fff",
-            border: "none",
-            borderRadius: "999px",
-            padding: "8px 20px",
-            fontSize: "12px",
-            fontFamily: "'Orbit', sans-serif",
-            letterSpacing: "1px",
-            cursor: "pointer",
-            marginBottom: "0px",
-          }}
-        >
-          주소 복사하기
-        </button>
+  <button
+  onClick={() => {
+    alert("복사 완료!");
+    copyAddress();
+  }}
+  style={{
+    background: "#D66072",
+    color: "#fff",
+    border: "none",
+    borderRadius: "999px",
+    padding: "8px 20px",
+    fontSize: "12px",
+    fontFamily: "'NanumSquareNeo', sans-serif",
+    letterSpacing: "-1px",
+    cursor: "pointer",
+    marginBottom: "0px",
+  }}
+>
+  주소 복사하기
+</button>
       </div>
 
       {/* 지도 이미지 - 클릭 시 네이버 지도 열기 */}
@@ -371,10 +493,11 @@ function LocationInfo() {
       <div style={{
         textAlign: "center",
         fontSize: "11px",
-        color: "#aaa",
+        color: "#666",
         padding: "8px 0 16px",
-        fontFamily: "'Orbit', sans-serif",
+        fontFamily: "'NanumSquareNeo', sans-serif",
         letterSpacing: "0.5px",
+        marginTop: "10px",
       }}>
         이미지를 클릭하면 네이버 지도로 이동합니다
       </div>
@@ -382,42 +505,42 @@ function LocationInfo() {
       {/* 교통 안내 */}
       <div style={{
         padding: "32px 24px 40px",
-        fontFamily: "'Orbit', sans-serif",
+        fontFamily: "'NanumSquareNeo', sans-serif",
         fontSize: "12px",
         lineHeight: 2,
         color: "#444",
       }}>
         {/* 셔틀버스 */}
         <div style={{ marginBottom: "20px" }}>
-          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "4px" }}>🚌 셔틀버스</div>
+          <div style={{ fontWeight: 800, fontSize: "17px", marginBottom: "4px" }}>🚌 셔틀버스</div>
           <div style={{ color: "#666" }}>신도림역 1번 출구</div>
         </div>
 
         {/* 자가용 */}
         <div style={{ marginBottom: "20px" }}>
-          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "4px" }}>🚗 자가용</div>
+          <div style={{ fontWeight: 800, fontSize: "17px", marginBottom: "4px" }}>🚗 자가용</div>
           <div style={{ color: "#666" }}>1시간 30분 무료 (초과시 15분당 1,000원)</div>
         </div>
 
         {/* 지하철&버스 */}
         <div>
-          <div style={{ fontWeight: 1200, fontSize: "17px", marginBottom: "8px" }}>🚎 지하철 & 버스</div>
-          <div style={{ fontWeight: 1200, color: "#666", marginBottom: "4px" }}>1호선 구로역 3번 출구 도보 5분</div>
-          <div style={{ fontWeight: 1200, color: "#666", marginBottom: "20px" }}>1, 2호선 신도림역 1번 출구 도보 10분</div>
+          <div style={{ fontWeight: 800, fontSize: "17px", marginBottom: "8px" }}>🚎 지하철 & 버스</div>
+          <div style={{ fontWeight: 500, color: "#666", marginBottom: "4px" }}>1호선 구로역 3번 출구 도보 5분</div>
+          <div style={{ fontWeight: 500, color: "#666", marginBottom: "20px" }}>1, 2호선 신도림역 1번 출구 도보 10분</div>
 
           {/* 신도림동(구로역) */}
-          <div style={{ fontWeight: 900, fontSize: "12px", marginBottom: "6px", color: "#333" }}>신도림동(구로역)</div>
+          <div style={{ fontWeight: 800, fontSize: "12px", marginBottom: "6px", color: "#333" }}>신도림동(구로역)</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "5px", fontSize: "11px", marginBottom: "20px" }}>
-            <div><span style={{ color: "#3a6ccd", fontWeight: 900 }}>간선(파랑)</span>{"  "}160, 503, 600, 662, 660, N16(심야)</div>
-            <div><span style={{ color: "#3a9e3a", fontWeight: 900 }}>지선(초록)</span>{"  "}6515, 6516, 6637, 6640A, 6640B(신도림역 방면), 6713, 6411, 6511</div>
-            <div><span style={{ color: "#d63a3a", fontWeight: 900 }}>직행(빨강)</span>{"  "}301, 320, 5200</div>
-            <div><span style={{ color: "#888", fontWeight: 900 }}>경기일반</span>{"  "}10, 11-1, 11-2, 83, 88, 530</div>
+            <div><span style={{ color: "#3a6ccd", fontWeight: 800 }}>간선(파랑)</span>{"  "}160, 503, 600, 662, 660, N16(심야)</div>
+            <div><span style={{ color: "#3a9e3a", fontWeight: 800 }}>지선(초록)</span>{"  "}6515, 6516, 6637, 6640A, 6640B(신도림역 방면), 6713, 6411, 6511</div>
+            <div><span style={{ color: "#d63a3a", fontWeight: 800 }}>직행(빨강)</span>{"  "}301, 320, 5200</div>
+            <div><span style={{ color: "#888", fontWeight: 800 }}>경기일반</span>{"  "}10, 11-1, 11-2, 83, 88, 530</div>
           </div>
 
           {/* 신도림중학교 */}
-          <div style={{ fontWeight: 900, fontSize: "12px", marginBottom: "6px", color: "#333" }}>신도림중학교</div>
+          <div style={{ fontWeight: 800, fontSize: "12px", marginBottom: "6px", color: "#333" }}>신도림중학교</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "5px", fontSize: "11px" }}>
-            <div><span style={{ color: "#3a9e3a", fontWeight: 900 }}>지선(초록)</span>{"  "}5615, 5714, 6512, 6411, 6511</div>
+            <div><span style={{ color: "#3a9e3a", fontWeight: 800 }}>지선(초록)</span>{"  "}5615, 5714, 6512, 6411, 6511</div>
           </div>
         </div>
       </div>
@@ -430,11 +553,11 @@ function LocationInfo() {
 ========================= */
 function SaveTheDate() {
   const calendar = [
-    [null, null, null, 1, 2, 3, 4],
-    [5, 6, 7, 8, 9, 10, 11],
-    [12, 13, 14, 15, 16, 17, 18],
-    [19, 20, 21, 22, 23, 24, 25],
-    [26, 27, 28, 29, 30, 31, null],
+    [null, null, null, null, 1, 2, 3],
+    [4, 5, 6, 7, 8, 9, 10],
+    [11, 12, 13, 14, 15, 16, 17],
+    [18, 19, 20, 21, 22, 23, 24],
+    [25, 26, 27, 28, 29, 30, 31],
   ];
 
   return (
@@ -465,7 +588,7 @@ function SaveTheDate() {
           justifyContent: "flex-end",
           alignItems: "center",
           paddingBottom: "10%",
-          transform: "scale(0.8) translateY(5%)", // ✅ FIX: translateY로 캘린더 위치 조정
+          transform: "translateY(5%) scale(0.8)", // ✅ FIX: translateY로 캘린더 위치 조정
         }}
       >
         <div
@@ -523,6 +646,57 @@ function SaveTheDate() {
   );
 }
 
+function PhotoUpload() {
+  return (
+    <FadeInSection padding="0 0 80px">
+      <div style={{
+        padding: "40px 24px",
+        textAlign: "center",
+        fontFamily: "'NanumSquareNeo', sans-serif"
+      }}>
+
+        <div style={{
+          fontSize: "14px",
+          letterSpacing: "3px",
+          color: "#aaa",
+          marginBottom: "16px"
+        }}>
+          PHOTO UPLOAD
+        </div>
+
+        <div style={{
+          fontSize: "12px",
+          color: "#666",
+          marginBottom: "24px",
+          lineHeight: 1.6
+        }}>
+          사진은 아래 링크를 통해 업로드해주세요 💌
+        </div>
+
+        <a
+          href="https://forms.gle/너의구글폼링크"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "inline-block",
+            background: "#D66072",
+            color: "#fff",
+            padding: "12px 22px",
+            borderRadius: "999px",
+            fontSize: "12px",
+            fontWeight: 800,
+            textDecoration: "none"
+          }}
+        >
+          하객 사진 업로드하기
+        </a>
+
+      </div>
+    </FadeInSection>
+  );
+}
+
+
 /* =========================
    APP
 ========================= */
@@ -531,9 +705,49 @@ function App() {
   const [fadeOut, setFadeOut] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(true);
   // ✅ FIX: 카카오 인앱브라우저 vh 튐 방지 - 최초 렌더 시점 높이로 px 고정
-  const [heroHeight] = useState(() => window.innerHeight * 1.15);
+
+  const [heroHeight, setHeroHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/main image_no text 02.png";
+  
+    img.onload = () => {
+      const ratio = img.height / img.width;
+      const width = window.innerWidth;
+      const calculatedHeight = width * ratio;
+  
+      setHeroHeight(Math.min(calculatedHeight, window.innerHeight * 1.2));
+    };
+  }, []);
+
+
+  const [showMusicBtn, setShowMusicBtn] = useState(true);
+  const lastScrollY = useRef(0);
 
   const audioRef = useRef(null);
+
+  
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+  
+      if (currentY > lastScrollY.current) {
+        // 아래로 스크롤 → 숨김
+        setShowMusicBtn(false);
+      } else {
+        // 위로 스크롤 → 표시
+        setShowMusicBtn(true);
+      }
+  
+      lastScrollY.current = currentY;
+    };
+  
+    window.addEventListener("scroll", handleScroll, { passive: true });
+  
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setFadeOut(true), 2000);
@@ -621,20 +835,26 @@ function App() {
         style={{
           position: "fixed",
           right: "20px",
-          bottom: "20px",
-          width: "58px",
-          height: "58px",
+          top: "20px",
+          width: "46px",
+          height: "46px",
           borderRadius: "999px",
           border: "none",
-          background: "#D66072",
+          background: "rgba(214, 96, 114, 0.95)",
           color: "#fff",
-          fontSize: "22px",
+          fontSize: "16px",
           zIndex: 999999,
           cursor: "pointer",
-          boxShadow: "0 4px 18px rgba(0,0,0,0.15)",
+          boxShadow: "0 4px 18px rgba(0,0,0,0.12)",
+          backdropFilter: "blur(4px)",
+
+          opacity: showMusicBtn ? 1 : 0,
+          transform: showMusicBtn ? "translateY(0)" : "translateY(-10px)",
+          transition: "all 0.25s ease",
+          pointerEvents: showMusicBtn ? "auto" : "none",
         }}
       >
-        {musicPlaying ? "❚❚" : "▶"}
+        {musicPlaying ? "I I" : "▶"}
       </button>
 
       {/* 🌹 BG */}
@@ -665,33 +885,82 @@ function App() {
         <section
           style={{
             height: `${heroHeight}px`,
+            width: "100%",
             overflow: "hidden",
             position: "relative",
+            background: "#000", // 이미지 비는 공간 대비
           }}
         >
           <img
-            src="/main-image-no-text.png"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center top",
-              display: "block",
-            }}
-          />
+  src="/main image_no text 02.png"
+  style={{
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",   // ⭐ 핵심 변경
+    backgroundColor: "#000",
+  }}
+/>
+  {/* 2. ⭐ 여기에 그라데이션 오버레이 추가 */}
+  <div
+    style={{
+      position: "absolute",
+      left: 0,
+      bottom: 0,
+      width: "100%",
+      height: "25%", // ← 이게 “하단 5~30% 그림자 영역”
+      background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+      pointerEvents: "none",
+      zIndex: 1,
+    }}
+  />
 
-          <img
-            src="/date-sticker.png"
-            style={{
-              position: "absolute",
-              left: "50%",
-              bottom: "40px",
-              transform: "translateX(-50%)",
-              width: "85%",
-              maxWidth: "360px",
-              animation: "float 4s ease-in-out infinite",
-            }}
-          />
+<img
+  src="/date-sticker.png"
+  style={{
+    position: "absolute",
+    left: "50%",
+    bottom: "110px",
+    width: "85%",
+    maxWidth: "360px",
+    zIndex: 3,
+    animation: "float 4s ease-in-out infinite",
+  }}
+/>
+
+<div style={{
+  position: "absolute",
+  left: "50%",
+  bottom: "32px",
+  transform: "translateX(-50%)",
+  textAlign: "center",
+  fontFamily: "'NanumSquareNeo', sans-serif",
+  fontWeight: 800,
+  whiteSpace: "nowrap",
+  zIndex: 2,
+}}>
+  <div style={{
+    fontSize: "13px",
+    fontWeight: "normal",
+    color: "#BCCEDD",
+textShadow: "0 2px 10px rgba(0,0,0,0.35)",
+    letterSpacing: "0.1px",
+    fontWeight: 800,
+    marginBottom: "12px",
+  }}>
+    2026.10.04 일요일 3:00 PM
+  </div>
+
+  <div style={{
+     fontSize: "13px",
+     color: "#BCCEDD",
+     textShadow: "0 2px 10px rgba(0,0,0,0.35)",
+    letterSpacing: "0.1px",
+  }}>
+    더 링크 호텔 5F 가든홀
+  </div>
+</div>
         </section>
 
         {/* 💌 INTRO */}
@@ -746,18 +1015,19 @@ function App() {
           <div
             style={{
               zIndex: 2,
-              fontFamily: "'Orbit', sans-serif",
+              fontFamily: "'IncheonEducation', sans-serif",
               fontWeight: 900,
-              lineHeight: 2,
+              lineHeight: 1.5,
               whiteSpace: "pre-line",
-              fontSize: "13px",
+              fontSize: "21px",
+              letterSpacing: "-0.1px",
             }}
           >
 {`웃고, 장난치고, 사랑하다 보니
-이제는 평생을 함께하기로 했습니다.
+평생을 함께하기로 했습니다.
 
-우리의 시작하는 날,
-함께해주시면 큰 기쁨으로 간직하겠습니다.
+저희의 새로운 시작을 함께해 주시면
+더없는 기쁨으로 간직하겠습니다.
 
 김보성 · 정서영 드림`}
           </div>
@@ -793,6 +1063,10 @@ function App() {
 
         {/* 📤 SHARE */}
         <ShareButtons />
+
+        {/* 📸 PHOTO UPLOAD (NEW) */}
+        <PhotoUpload />
+        
       </div>
     </>
   );
@@ -822,7 +1096,7 @@ function Countdown() {
       <div style={{
         textAlign: "center",
         padding: "40px 24px",
-        fontFamily: "'Orbit', sans-serif",
+        fontFamily: "'NanumSquareNeo', sans-serif",
         background: "linear-gradient(135deg, #fff0f4 0%, #fff8fb 100%)",
         margin: "0 0",
       }}>
@@ -833,15 +1107,15 @@ function Countdown() {
           김보성 ❤️ 정서영의 결혼식이
         </div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "6px", marginBottom: "12px" }}>
-          <span style={{ fontSize: "36px", color: "#D66072", fontWeight: 900, lineHeight: 1 }}>D −</span>
-          <span style={{ fontSize: "36px", fontWeight: 900, color: "#D66072", lineHeight: 1 }}>{days}</span>
-          <span style={{ fontSize: "36px", color: "#D66072", fontWeight: 900, lineHeight: 1 }}>일</span>
+          <span style={{ fontSize: "30px", color: "#D66072", fontWeight: 900, lineHeight: 1 }}>D −</span>
+          <span style={{ fontSize: "30px", fontWeight: 900, color: "#D66072", lineHeight: 1 }}>{days}</span>
+          <span style={{ fontSize: "30px", color: "#D66072", fontWeight: 900, lineHeight: 1 }}>일</span>
         </div>
         <div style={{ fontSize: "13px", color: "#888" }}>
           남았습니다
         </div>
         <div style={{ marginTop: "24px", fontSize: "11px", color: "#bbb", letterSpacing: "2px" }}>
-          2026 · 10 · 04 · SUNDAY · 3:00 PM
+          2026 · 10 · 04 · 일요일 · 3:00 PM
         </div>
       </div>
     </FadeInSection>
@@ -877,10 +1151,10 @@ function AccountInfo() {
     <FadeInSection padding="0 0 60px">
       <div style={{
         padding: "40px 24px",
-        fontFamily: "'Orbit', sans-serif",
+        fontFamily: "'NanumSquareNeo', sans-serif",
         textAlign: "center",
       }}>
-        <div style={{ fontSize: "11px", letterSpacing: "4px", color: "#aaa", marginBottom: "32px" }}>
+        <div style={{ fontSize: "14px", letterSpacing: "4px", color: "#333", marginBottom: "32px" }}>
           마음 전하실 곳
         </div>
 
@@ -899,7 +1173,7 @@ function AccountInfo() {
             신랑 김보성
           </div>
           <div style={{ fontSize: "12px", color: "#888", marginBottom: "16px" }}>
-            은행명 미정 · 000-0000-0000
+            신한 은행 · 110-351-868531
           </div>
           <button
             onClick={() => copy("000-0000-0000")}
@@ -910,7 +1184,7 @@ function AccountInfo() {
               borderRadius: "999px",
               padding: "7px 18px",
               fontSize: "11px",
-              fontFamily: "'Orbit', sans-serif",
+              fontFamily: "'NanumSquareNeo', sans-serif",
               letterSpacing: "1px",
               cursor: "pointer",
             }}
@@ -944,7 +1218,7 @@ function AccountInfo() {
               borderRadius: "999px",
               padding: "7px 18px",
               fontSize: "11px",
-              fontFamily: "'Orbit', sans-serif",
+              fontFamily: "'NanumSquareNeo', sans-serif",
               letterSpacing: "1px",
               cursor: "pointer",
             }}
@@ -981,7 +1255,7 @@ function ShareButtons() {
         content: {
           title: "김보성 ❤️ 정서영 결혼합니다",
           description: "2026 · 10 · 04 · SUNDAY · 3:00 PM\n더 링크 호텔 5F 가든홀",
-          imageUrl: window.location.origin + "/main-image-no-text.png",
+          imageUrl: window.location.origin + "/main image_no text 02.png",
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
         buttons: [{ title: "청첩장 보기", link: { mobileWebUrl: shareUrl, webUrl: shareUrl } }],
@@ -995,7 +1269,7 @@ function ShareButtons() {
     <FadeInSection padding="0 0 80px">
       <div style={{
         padding: "0 24px",
-        fontFamily: "'Orbit', sans-serif",
+        fontFamily: "'NanumSquareNeo', sans-serif",
         textAlign: "center",
       }}>
         <div style={{ width: "40px", height: "1px", background: "#eee", margin: "0 auto 32px" }} />
@@ -1011,9 +1285,9 @@ function ShareButtons() {
               border: "none",
               background: "#FEE500",
               color: "#3C1E1E",
-              fontSize: "13px",
-              fontWeight: 900,
-              fontFamily: "'Orbit', sans-serif",
+              fontSize: "12px",
+              fontWeight: 800,
+              fontFamily: "'NanumSquareNeo', sans-serif",
               letterSpacing: "1px",
               cursor: "pointer",
               display: "flex",
@@ -1038,9 +1312,9 @@ function ShareButtons() {
               border: "1.5px solid #D66072",
               background: "transparent",
               color: "#D66072",
-              fontSize: "13px",
-              fontWeight: 900,
-              fontFamily: "'Orbit', sans-serif",
+              fontSize: "12px",
+              fontWeight: 800,
+              fontFamily: "'NanumSquareNeo', sans-serif",
               letterSpacing: "1px",
               cursor: "pointer",
               display: "flex",
@@ -1074,6 +1348,9 @@ function GuestMessage() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  const postitColors = ["#FFF0F5", "#F0FAFF", "#FFF7E6"];
+  const nameColors = ["#D66072", "#5DADE2", "#E6A23C"];
 
   useEffect(() => {
     loadMessages();
@@ -1130,12 +1407,12 @@ function GuestMessage() {
 
   return (
     <FadeInSection padding="0 0 60px">
-      <div style={{ padding: "40px 24px", fontFamily: "'Orbit', sans-serif" }}>
+      <div style={{ padding: "40px 24px", fontFamily: "'NanumSquareNeo', sans-serif" }}>
         
         <div style={{
           textAlign: "center",
-          fontSize: "11px",
-          letterSpacing: "4px",
+          fontSize: "15px",
+          letterSpacing: "0.2px",
           color: "#aaa",
           marginBottom: "28px"
         }}>
@@ -1190,48 +1467,60 @@ function GuestMessage() {
         {loading ? (
           <div style={{ textAlign: "center", color: "#ccc" }}>불러오는 중...</div>
         ) : messages.length === 0 ? (
-          <div style={{ textAlign: "center", color: "#ccc" }}>
-            첫 번째 메시지를 남겨주세요 💕
+          <div style={{ textAlign: "center", color: "#333", fontSize: "11px"}}>
+            축하 메시지를 남겨주세요 💕
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {messages.map((m, i) => (
-              <div
-                key={m.id}
-                style={{
-                  background: "#FFFDF5",
-                  border: "1px solid #f2e1e6",
-                  borderRadius: "12px",
-                  padding: "14px 16px",
-                  transform: `rotate(${(i % 3 - 1) * 2}deg)`,
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)"
-                }}
-              >
-                <div style={{ fontSize: "11px", fontWeight: 900, color: "#D66072", marginBottom: "6px" }}>
-                  {m.name}
-                </div>
+           
+           {messages.map((m, i) => {
+  const bg = postitColors[i % 3];
+  const nameColor = nameColors[i % 3];
 
-                <div style={{ fontSize: "12px", color: "#444", whiteSpace: "pre-wrap" }}>
-                  {m.message}
-                </div>
-                <button
-                  onClick={async () => {
-                    localStorage.removeItem("msg:" + m.id);
-                    await loadMessages();
-                  }}
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "10px",
-                    border: "none",
-                    background: "transparent",
-                    color: "#D66072",
-                    cursor: "pointer",
-                  }}
-                >
-                  삭제
-                </button>
-              </div>
-            ))}
+  return (
+    <div
+      key={m.id}
+      style={{
+        background: bg,
+        border: "1px solid #f2e1e6",
+        borderRadius: "12px",
+        padding: "14px 16px",
+        transform: `rotate(${(i % 3 - 1) * 2}deg)`,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.08)"
+      }}
+    >
+      <div style={{
+        fontSize: "11px",
+        fontWeight: 900,
+        color: nameColor,
+        marginBottom: "6px"
+      }}>
+        {m.name}
+      </div>
+
+      <div style={{ fontSize: "12px", color: "#444", whiteSpace: "pre-wrap" }}>
+        {m.message}
+      </div>
+
+      <button
+        onClick={async () => {
+          localStorage.removeItem("msg:" + m.id);
+          await loadMessages();
+        }}
+        style={{
+          marginTop: "8px",
+          fontSize: "10px",
+          border: "none",
+          background: "transparent",
+          color: "#D66072",
+          cursor: "pointer",
+        }}
+      >
+        삭제
+      </button>
+    </div>
+  );
+})}
           </div>
         )}
       </div>
