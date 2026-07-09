@@ -110,13 +110,13 @@ body {
 ========================= */
 function SwipeGallery() {
   const images = [
-    "/photo5.jpg",
-    "/photo8.jpg",
-    "/photo11.jpg",
-    "/photo6.jpg",
-    "/photo17.jpg",
     "/photo16.jpg",
-    "/photo15.jpg",
+    "/photo17.jpg",
+    "/photo18.jpg",
+    "/photo19.jpg",
+    "/photo20.jpg",
+    "/photo21.jpg",
+    "/photo22.jpg",
   ];
 
   const sliderRef = useRef(null);
