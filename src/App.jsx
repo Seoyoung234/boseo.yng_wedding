@@ -586,7 +586,7 @@ function SaveTheDate() {
           flexDirection: "column",
           justifyContent: "flex-end",
           alignItems: "center",
-          paddingBottom: "10%",
+          paddingBottom: "12%",
           transform: "translateY(5%) scale(0.8)", // ✅ FIX: translateY로 캘린더 위치 조정
         }}
       >
@@ -807,7 +807,7 @@ function App() {
   const [musicPlaying, setMusicPlaying] = useState(true);
   // ✅ FIX: 카카오 인앱브라우저 vh 튐 방지 - 최초 렌더 시점 높이로 px 고정
   const [guestPhotos, setGuestPhotos] = useState([]);
-
+  const [contactOpen, setContactOpen] = useState(false);
 
   
 
@@ -1063,8 +1063,8 @@ textShadow: "0 2px 10px rgba(0,0,0,0.35)",
      textShadow: "0 2px 10px rgba(0,0,0,0.35)",
     letterSpacing: "0.1px",
   }}>
-    더 링크 호텔 5F 가든홀
-  </div>
+  더 링크 호텔 5F 가든홀
+</div>
 </div>
         </section>
 
@@ -1092,6 +1092,18 @@ textShadow: "0 2px 10px rgba(0,0,0,0.35)",
               opacity: 0.4,
             }}
           />
+
+          {/* 하단 그라데이션 */}
+<div style={{
+  position: "absolute",
+  left: 0,
+  bottom: 0,
+  width: "100%",
+  height: "30%",
+  background: "linear-gradient(to top, rgba(255,255,255,0.5), transparent)",
+  pointerEvents: "none",
+  zIndex: 1,
+}} />
 
           <div
             style={{
@@ -1135,8 +1147,149 @@ textShadow: "0 2px 10px rgba(0,0,0,0.35)",
 더없는 기쁨으로 간직하겠습니다.
 
 김보성 · 정서영 드림`}
+
+{/* 혼주 정보 */}
+<div style={{
+  zIndex: 2,
+  marginTop: "70px",
+  fontFamily: "'NanumSquareNeo', sans-serif",
+  fontSize: "13px",
+  fontWeight: 500,
+  color: "#000",
+  lineHeight: 2,
+  letterSpacing: "-1px",
+}}>
+  <div>故&nbsp;  김진석 · 이제훈의 아들 &nbsp;&nbsp;<span style={{ color: "#D66072", fontSize: "19px", fontWeight: 700 }}>김보성</span></div>
+  <div>정상운 · 이윤선의 딸 &nbsp;&nbsp;<span style={{ color: "#D66072", fontSize: "19px", fontWeight: 700 }}>정서영</span></div>
+</div>
+
+          {/* 연락하기 버튼 */}
+          <button
+  onClick={() => setContactOpen(true)}
+  style={{
+    zIndex: 2,
+    marginTop: "24px",
+    background: "rgba(255,248,251,0.5)",
+    border: "none",
+    color: "#D66072",
+    borderRadius: "30px",
+    padding: "7px 18px",
+    fontSize: "11px",
+    fontFamily: "'NanumSquareNeo', sans-serif",
+    fontWeight: 800,
+    cursor: "pointer",
+    letterSpacing: "1px",
+    backdropFilter: "blur(4px)",
+  }}
+>
+  📞 연락하기
+</button>
+
           </div>
         </section>
+
+
+        {/* 📞 연락처 팝업 */}
+        {contactOpen && createPortal(
+          <div
+            onClick={() => setContactOpen(false)}
+            style={{
+              position: "fixed", inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 2147483646,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "85vw",
+                maxWidth: "420px",
+                background: "#fff",
+                borderRadius: "20px",
+                padding: "28px 20px",
+                fontFamily: "'NanumSquareNeo', sans-serif",
+                position: "relative",
+              }}
+            >
+              {/* 닫기 */}
+              <button
+                onClick={() => setContactOpen(false)}
+                style={{
+                  position: "absolute", top: "14px", right: "16px",
+                  background: "transparent", border: "none",
+                  fontSize: "18px", cursor: "pointer", color: "#aaa",
+                }}
+              >✕</button>
+
+              <div style={{ fontSize: "16px", fontWeight: 800, color: "#333", marginBottom: "20px", textAlign: "center" }}>
+                연락처
+              </div>
+
+              <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+                {/* 신랑측 */}
+                <div style={{ flex: "0 0 auto", width: "120px" }}>
+                  <div style={{ fontSize: "14px", color: "#D66072", fontWeight: 800, marginBottom: "12px", letterSpacing: "1px" }}>✿ 신랑측</div>
+                  {[
+                    { name: "신랑 김보성", tel: "010-7175-7526" },
+                    { name: "신랑 어머니 이제훈", tel: "010-9033-7524" },
+                  ].map((p, i) => (
+                    <div key={i} style={{ marginBottom: "14px" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 800, color: "#222", marginBottom: "4px" }}>{p.name}</div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => { window.location.href = `tel:${p.tel}`; }}
+                          style={{ background: "transparent", border: "none", borderRadius: "8px", padding: "6px 8px", cursor: "pointer", fontSize: "14px" }}
+                          title="전화하기"
+                        >📞</button>
+                        <button
+                          onClick={() => { window.location.href = `sms:${p.tel}`; }}
+                          style={{ background: "transparent", border: "none", borderRadius: "8px", padding: "6px 8px", cursor: "pointer", fontSize: "14px" }}
+                          title="문자하기"
+                        >💬</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 구분선 */}
+                <div style={{ width: "1px", background: "#f0e0e5" }} />
+
+                {/* 신부측 */}
+                <div style={{ flex: "0 0 auto", width: "120px" }}>
+
+                  <div style={{ fontSize: "14px", color: "#D66072", fontWeight: 800, marginBottom: "12px", letterSpacing: "1px" }}>✿ 신부측</div>
+                  {[
+                    { name: "신부 정서영", tel: "010-9172-8958" },
+                    { name: "신부 아버지 정상운", tel: "010-4702-8958" },
+                    { name: "신부 어머니 이윤선", tel: "010-3797-8958" },
+                  ].map((p, i) => (
+                    <div key={i} style={{ marginBottom: "14px" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 800, color: "#222", marginBottom: "4px" }}>{p.name}</div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => { window.location.href = `tel:${p.tel}`; }}
+                          style={{ background: "transparent", border: "none", borderRadius: "8px", padding: "6px 8px", cursor: "pointer", fontSize: "14px" }}
+                          title="전화하기"
+                        >📞</button>
+                        <button
+                          onClick={() => { window.location.href = `sms:${p.tel}`; }}
+                          style={{ background: "transparent", border: "none", borderRadius: "8px", padding: "6px 8px", cursor: "pointer", fontSize: "14px" }}
+                          title="문자하기"
+                        >💬</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+        
+
 
         {/* 📸 CAROUSEL */}
         <FadeInSection padding="30px 0">
@@ -1231,6 +1384,9 @@ function Countdown() {
    💝 ACCOUNT INFO
 ========================= */
 function AccountInfo() {
+  const [openGroom, setOpenGroom] = useState(false);
+  const [openBride, setOpenBride] = useState(false);
+
   const copy = (text) => {
     const fallback = () => {
       const el = document.createElement("textarea");
@@ -1252,84 +1408,99 @@ function AccountInfo() {
     }
   };
 
+  const groomAccounts = [
+    { name: "신랑 김보성", bank: "신한은행", account: "110-351-868531" },
+    { name: "신랑 어머니 이제훈", bank: "국민은행", account: "765-21-0230-138" },
+  ];
+
+  const brideAccounts = [
+    { name: "신부 정서영", bank: "우리은행", account: "1002-456-946143" },
+    { name: "신부 아버지 정상운", bank: "국민은행", account: "219-21-0505-069" },
+    { name: "신부 어머니 이윤선", bank: "우리은행", account: "372-106-167-02-001" },
+  ];
+
+  const toggleStyle = {
+    background: "#fff",
+    border: "1px solid #f0e0e5",
+    borderRadius: "16px",
+    marginBottom: "12px",
+    overflow: "hidden",
+    fontFamily: "'NanumSquareNeo', sans-serif",
+  };
+
+  const headerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "18px 20px",
+    cursor: "pointer",
+  };
+
   return (
     <FadeInSection padding="0 0 60px">
-      <div style={{
-        padding: "40px 24px",
-        fontFamily: "'NanumSquareNeo', sans-serif",
-        textAlign: "center",
-      }}>
-        <div style={{ fontSize: "14px", letterSpacing: "4px", color: "#333", marginBottom: "32px",fontWeight: 600 }}>
+      <div style={{ padding: "40px 24px", fontFamily: "'NanumSquareNeo', sans-serif", textAlign: "center" }}>
+        <div style={{ fontSize: "14px", letterSpacing: "4px", color: "#333", marginBottom: "32px", fontWeight: 600 }}>
           마음 전하실 곳
         </div>
 
         {/* 신랑측 */}
-        <div style={{
-          background: "#fff",
-          border: "1px solid #f0e0e5",
-          borderRadius: "16px",
-          padding: "24px 20px",
-          marginBottom: "16px",
-        }}>
-          <div style={{ fontSize: "11px", color: "#D66072", letterSpacing: "2px", marginBottom: "12px" }}>
-            ✿ 신랑측
+        <div style={toggleStyle}>
+          <div style={headerStyle} onClick={() => setOpenGroom(v => !v)}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#D66072" }}>✿ 신랑측</span>
+            <span style={{ fontSize: "18px", color: "#D66072", transition: "transform 0.3s", display: "inline-block", transform: openGroom ? "rotate(180deg)" : "rotate(0deg)" }}>∨</span>
           </div>
-          <div style={{ fontSize: "14px", fontWeight: 900, color: "#222", marginBottom: "8px" }}>
-            신랑 김보성
-          </div>
-          <div style={{ fontSize: "12px", color: "#888", marginBottom: "16px" }}>
-            신한 은행 · 110-351-868531
-          </div>
-          <button
-            onClick={() => copy("110-351-868531")}
-            style={{
-              background: "transparent",
-              border: "1.5px solid #D66072",
-              color: "#D66072",
-              borderRadius: "999px",
-              padding: "7px 18px",
-              fontSize: "11px",
-              fontFamily: "'NanumSquareNeo', sans-serif",
-              letterSpacing: "1px",
-              cursor: "pointer",
-            }}
-          >
-            계좌 복사
-          </button>
+
+          {openGroom && (
+            <div style={{ borderTop: "1px solid #f9eef1", padding: "12px 20px 20px" }}>
+              {groomAccounts.map((a, i) => (
+                <div key={i} style={{ textAlign: "left", padding: "14px 0", borderBottom: i < groomAccounts.length - 1 ? "1px solid #fdf0f3" : "none" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 800, color: "#222", marginBottom: "4px" }}>{a.name}</div>
+                  <div style={{ fontSize: "12px", color: "#888", marginBottom: "10px" }}>{a.bank} · {a.account}</div>
+                  <button
+                    onClick={() => copy(a.account)}
+                    style={{
+                      background: "transparent", border: "1.5px solid #D66072",
+                      color: "#D66072", borderRadius: "999px", padding: "5px 14px",
+                      fontSize: "11px", fontFamily: "'NanumSquareNeo', sans-serif",
+                      cursor: "pointer",
+                    }}
+                  >
+                    계좌 복사
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 신부측 */}
-        <div style={{
-          background: "#fff",
-          border: "1px solid #f0e0e5",
-          borderRadius: "16px",
-          padding: "24px 20px",
-        }}>
-          <div style={{ fontSize: "11px", color: "#D66072", letterSpacing: "2px", marginBottom: "12px" }}>
-            ✿ 신부측
+        <div style={toggleStyle}>
+          <div style={headerStyle} onClick={() => setOpenBride(v => !v)}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#D66072" }}>✿ 신부측</span>
+            <span style={{ fontSize: "18px", color: "#D66072", transition: "transform 0.3s", display: "inline-block", transform: openBride ? "rotate(180deg)" : "rotate(0deg)" }}>∨</span>
           </div>
-          <div style={{ fontSize: "14px", fontWeight: 900, color: "#222", marginBottom: "8px" }}>
-            신부 정서영
-          </div>
-          <div style={{ fontSize: "12px", color: "#888", marginBottom: "16px" }}>
-            우리은행 · 1002-456-946143
-          </div>
-          <button
-            onClick={() => copy("1002-456-946143")}
-            style={{
-              background: "transparent",
-              border: "1.5px solid #D66072",
-              color: "#D66072",
-              borderRadius: "999px",
-              padding: "7px 18px",
-              fontSize: "11px",
-              fontFamily: "'NanumSquareNeo', sans-serif",
-              letterSpacing: "1px",
-              cursor: "pointer",
-            }}
-          >
-            계좌 복사
-          </button>
+
+          {openBride && (
+            <div style={{ borderTop: "1px solid #f9eef1", padding: "12px 20px 20px" }}>
+              {brideAccounts.map((a, i) => (
+                <div key={i} style={{ textAlign: "left", padding: "14px 0", borderBottom: i < brideAccounts.length - 1 ? "1px solid #fdf0f3" : "none" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 800, color: "#222", marginBottom: "4px" }}>{a.name}</div>
+                  <div style={{ fontSize: "12px", color: "#888", marginBottom: "10px" }}>{a.bank} · {a.account}</div>
+                  <button
+                    onClick={() => copy(a.account)}
+                    style={{
+                      background: "transparent", border: "1.5px solid #D66072",
+                      color: "#D66072", borderRadius: "999px", padding: "5px 14px",
+                      fontSize: "11px", fontFamily: "'NanumSquareNeo', sans-serif",
+                      cursor: "pointer",
+                    }}
+                  >
+                    계좌 복사
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </FadeInSection>
@@ -1384,9 +1555,9 @@ function ShareButtons() {
           <button
             onClick={kakaoShare}
             style={{
-              width: "220px",
-              padding: "14px 20px",
-              borderRadius: "14px",
+              width: "180px",
+              padding: "14px 18px",
+              borderRadius: "50px",
               border: "none",
               background: "#FEE500",
               color: "#3C1E1E",
@@ -1411,9 +1582,9 @@ function ShareButtons() {
           <button
             onClick={copyLink}
             style={{
-              width: "220px",
-              padding: "14px 20px",
-              borderRadius: "14px",
+              width: "180px",
+              padding: "12px 10px",
+              borderRadius: "50px",
               border: "1.5px solid #D66072",
               background: "transparent",
               color: "#D66072",
